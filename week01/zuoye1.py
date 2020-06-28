@@ -3,10 +3,11 @@
     安装并使用requests、bs4库，爬取猫眼电影的前10个电影名称、电影类型和上映时间，并以UTF-8字符集保存到csv格式的文件中。
 
     解题思路：
+        使用html和lxml两种方式来完成，巩固所学知识。
         1、先使用requests获取网页源代码
         2、使用bs4解析，匹配电影名称和链接
         3、再次请求电影链接进入详情页获取电影类型和上映时间
-        4、前10个？如何控制
+        4、前10个我选择使用字典记录爬取到的信息，每条记录是一个k/v，计算字典长度来控制爬取个数
 '''
 
 import requests
@@ -27,39 +28,47 @@ def get_detail(url):
     '''获取电影详情'''
     r = requests.get(url,headers=headers)
     result = etree.HTML(r.text)
+
     #电影类型
     film_type = result.xpath('/html/body/div[3]/div/div[2]/div[1]/ul/li[1]/a/text()'.strip())
+
     #上映时间
     film_time = result.xpath('/html/body/div[3]/div/div[2]/div[1]/ul/li[3]/text()'.strip())
     return film_type,film_time
 
-def save_csv(title,type,time):
-    '''保存为csv格式'''
-    data = [title,type,time]
-    print(data)
-    movie = pandas.DataFrame(data=data)
-    movie.to_csv('./movies.csv', encoding='utf8', mode='a',index=False, header=False,)
-
 def get_info(url,num=10):
     '''获取电影名称和链接'''
+
+    #初始化列表
+    data = []
     r = requests.get(url=url,headers=headers)
     bs_info = bs(r.text,'html.parser')
+
     for tag in bs_info.find_all('div',attrs={'class':'channel-detail movie-item-title'}):
         #获取电影名称
         title = tag.get('title')
+
         #获取链接
         for atag in tag.find_all('a'):
             link = 'https://maoyan.com' + atag.get('href')
             sleep(10)
-        #存进字典
+
         item[title] = link
+
         #调用函数，获取电影类型和上映时间
         type,time = get_detail(url=link)
-        #保存为csv格式
-        save_csv(title,type,time)
+
+        #最终的影片信息存储到列表中，便于后续保存为csv
+        data.append([title,type,time])
+
         # 只取前num个电影
         if len(item) == num:
+            # 保存为csv格式
+            movie = pandas.DataFrame(data=data)
+            movie.to_csv('./movies.csv', encoding='utf8',index=False, header=False, )
             break
 
 url = 'https://maoyan.com/films?showType=3'
-get_info(url=url)
+
+if __name__ == '__main__':
+    get_info(url=url)
