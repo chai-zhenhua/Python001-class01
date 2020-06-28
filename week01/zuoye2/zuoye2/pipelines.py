@@ -9,7 +9,7 @@ class Zuoye2Pipeline:
         type = item['type']
         time = item['time']
 
-        output = [f'{title}  {type}  {time}']
+        output = [[title,type,time]]
         movie = pd.DataFrame(data=output)
-        movie.to_csv('../movies2.csv',mode='a',encoding='utf8',index=False,header=False)
+        movie.to_csv('./movies2.csv',mode='a',encoding='utf8',index=False,header=False)
         return item

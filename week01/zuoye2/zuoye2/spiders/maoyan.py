@@ -11,7 +11,7 @@ class MaoyanSpider(scrapy.Spider):
     start_urls = ['https://maoyan.com/films?showType=3']
 
     def start_requests(self):
-        cookie = '__mta=207976749.1593239934090.1593324403759.1593330783755.12;' ' uuid_n_v=v1; ' 'uuid=DBEF6B20B84011EAB787AF911C0DA1B79D43D5D2785F4E048B9D77842C2BE1F7; ' '_csrf=bea4b91d22739c223995862945de3dd6bf9902390b38ad2c1bda3b3770e5aec2; ' 'Hm_lvt_703e94591e87be68cc8da0da7cbd0be2=1592986956,1593076672,1593096084; ' '_lxsdk_cuid=172e56bef4dc8-08ad4c59b813bd-31607403-fa000-172e56bef4dc8; ' '_lxsdk=DBEF6B20B84011EAB787AF911C0DA1B79D43D5D2785F4E048B9D77842C2BE1F7; ' 'mojo-uuid=49838d8e729158513762de8e12e2af53; ' 'Hm_lpvt_703e94591e87be68cc8da0da7cbd0be2=1593330783;' ' _lxsdk_s=172f9ea3a73-a45-cdc-b76%7C%7C2'
+        cookie = '__mta=146044427.1593337411652.1593337411652.1593337411652.1;' ' uuid_n_v=v1; ' 'uuid=D2A2CCE0B92311EAA94453F28D7995DF136E9C239CE54B49884F5EDB075757A3; ' '_csrf=7191ff74d070b7024355dbc27a7aa6e4c93b975adf782870304f6f92dccba15c; ' 'Hm_lvt_703e94591e87be68cc8da0da7cbd0be2=1592986956,1593076672,1593096084,1593337394; ' '_lxsdk_cuid=172e56bef4dc8-08ad4c59b813bd-31607403-fa000-172e56bef4dc8; ' '_lxsdk=D2A2CCE0B92311EAA94453F28D7995DF136E9C239CE54B49884F5EDB075757A3; ' 'mojo-uuid=49838d8e729158513762de8e12e2af53; ' 'Hm_lpvt_703e94591e87be68cc8da0da7cbd0be2=1593337411;' ' _lxsdk_s=172fa4f5efd-99b-ea-43c%7C308984839%7C2'
         url = 'https://maoyan.com/films?showType=3'
         yield scrapy.Request(url=url,cookies=cookie,callback=self.parse)
 
@@ -22,15 +22,12 @@ class MaoyanSpider(scrapy.Spider):
 
         #使用列表分片获取前10个电影
         for movie in movies[:10]:
-            #问题：strip()无法去除空格
-            title = movie.xpath('./a/div/div[1]/span/text()'.strip()).extract()
-            type = movie.xpath('./a/div/div[2]/text()[2]'.strip()).extract()
-            time = movie.xpath('./a/div/div[4]/text()[2]'.strip()).extract()
+            title = movie.xpath('./a/div/div[1]/span/text()').extract_first().strip()
+            type = movie.xpath('./a/div/div[2]/text()[2]').extract_first().strip()
+            time = movie.xpath('./a/div/div[4]/text()[2]').extract_first().strip()
             sleep(30)
             #返回数据给items.py
             item['title'] = title
             item['type'] = type
             item['time'] = time
             yield item
-
-
