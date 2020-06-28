@@ -36,7 +36,7 @@ def get_detail(url):
 def save_csv(title,type,time):
     '''保存为csv格式'''
     data = [title,type,time]
-#    print(data)
+    print(data)
     movie = pandas.DataFrame(data=data)
     movie.to_csv('./movies.csv', encoding='utf8', mode='a',index=False, header=False,)
 
