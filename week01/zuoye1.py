@@ -30,14 +30,14 @@ Cookie = {
     "Hm_lpvt_703e94591e87be68cc8da0da7cbd0be2" : "1593239930",
     "_lxsdk_s" : "172f47fc60c-16c-2e1-026%7C308984839%7C2"
 }
-headers = {'user-agent':user_agent,'Cookie':Cookie}
+headers = {'user-agent':user_agent}
 
 #定义字典，把爬取的结果存放在字典中
 item = {}
 
 def get_detail(url):
     '''获取电影详情'''
-    r = requests.get(url,headers=headers)
+    r = requests.get(url,headers=headers,cookies=Cookie)
     result = etree.HTML(r.text)
 
     #电影类型
