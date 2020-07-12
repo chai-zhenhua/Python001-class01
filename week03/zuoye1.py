@@ -1,3 +1,7 @@
+'''这次作业还是挺有挑战性的，通过这次作业也让我的编码能力和编程思想更近了一步，由于电脑充电器忘记带回来，所以这个作业目前只完成了检测ping
+的功能，明天我会继续补齐作业
+'''
+
 import argparse
 from ping3 import ping
 from threading import Thread
@@ -74,9 +78,6 @@ class Check(Thread):
                         print(f'{ipaddr} is dead')
                 except Exception as f:
                     print(f'发生异常： {f}')
-
-    def Ping(self):
-        pass
 
     def check_port(self):
         pass
