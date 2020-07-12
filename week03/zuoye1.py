@@ -9,6 +9,7 @@ import itertools
 class GetData(object):
     def __init__(self, ip_ranage):
         self.ip_queue = Queue()
+        self.port_queue = Queue()
         if '-' in ip_ranage:
             # 把ip地址段转化为ip列表
             first_ip = re.search('[0-9]+.[0-9]+.[0-9]+.[0-9]+', ip_ranage)  # 获取IP地址段的第一个ip
@@ -26,14 +27,22 @@ class GetData(object):
         else:
             self.ip_list = ip_ranage
 
-        ports = list(range(1, 1025))  # ports
-        # 组合IP & ports
-        ip_pools = itertools.product(ip_list, ports)
-        for ip_pool in ip_pools:
-            self.ip_queue.put(ip_pool)
+        for ip in self.ip_list:
+            self.ip_queue.put(ip)
 
-        # -w 输出
-        output_address = ''
+        ports = range(1, 1025)  # ports
+        for port in ports:
+            self.port_queue.put(port)
+
+
+        # 组合IP & ports
+        # ip_pools = itertools.product(ip_list, ports)
+        # for ip_pool in ip_pools:
+        #     self.ip_queue.put(ip_pool)
+
+
+        # # -w 输出
+        # output_address = ''
 
 
 class Check(Thread):
@@ -45,9 +54,9 @@ class Check(Thread):
 
     def run(self):
         '''重写run方法'''
-        print(f'线程{Thread.getName()}启动')
+        print(f'线程{Thread.getName(self)}启动')
         self.check_ping()
-        print(f'线程{Thread.getName()}结束')
+        print(f'线程{Thread.getName(self)}结束')
 
     def check_ping(self):
         while True:
@@ -55,7 +64,14 @@ class Check(Thread):
                 break
             else:
                 try:
-                    ipaddr, port = self.ipQueue.get()
+                    ipaddr = self.ipQueue.get()
+                    #print(f'地址是：{ipaddr}')
+
+                    res = ping(dest_addr=ipaddr,timeout=0.5)
+                    if res:
+                        print(f'{ipaddr} is alive')
+                    else:
+                        print(f'{ipaddr} is dead')
                 except Exception as f:
                     print(f'发生异常： {f}')
 
@@ -67,21 +83,32 @@ class Check(Thread):
 
 
 if __name__ == '__main__':
-# #defina command line args
-# parse = argparse.ArgumentParser(description='接收命令行参数')
-# parse.add_argument('-n',dest='Number',required=True,default=0,help='指定并发数量',type=int) #接收并发数
-# parse.add_argument('-f',dest='Protocol',required=True,default='',help='指定使用tcp or ping',type=str) #接收操作类型
-# parse.add_argument('-ip',dest='Ip',required=True,default='',help='指定IP or IP ranage',type=str) #接收ip范围
-# parse.add_argument('-w',dest='File',required=False,default='',help='指定保存文件',type=str) #接收保存文件名和位置
-#
-# args = parse.parse_args()
-#
-# #分配参数
-# command_n = args.Number
-# command_f = args.Protocol
-# command_ip = args.Ip
-# command_w = args.File
-    pass
+    #defina command line args
+    parse = argparse.ArgumentParser(description='接收命令行参数')
+    parse.add_argument('-n',dest='Number',required=True,default=0,help='指定并发数量',type=int) #接收并发数
+    parse.add_argument('-f',dest='Protocol',required=True,default='',help='指定使用tcp or ping',type=str) #接收操作类型
+    parse.add_argument('-ip',dest='Ip',required=True,default='',help='指定IP or IP ranage',type=str) #接收ip范围
+    parse.add_argument('-w',dest='File',required=False,default='',help='指定保存文件',type=str) #接收保存文件名和位置
+
+    args = parse.parse_args()
+
+    #分配参数
+    command_n = args.Number
+    command_f = args.Protocol
+    command_ip = args.Ip
+    command_w = args.File
+
+    #启动程序
+    a = GetData(command_ip)
+
+    thread_list = []
+    for _ in range(command_n):
+        t = Check(a.ip_queue)
+        t.start()
+        thread_list.append(t)
+
+    for n in thread_list:
+        n.join()
 
 
 
