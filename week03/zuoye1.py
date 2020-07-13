@@ -81,9 +81,12 @@ class Check(Thread):
                     if res:
                         print(f'{ipaddr} is alive')
                         if command_w:   #保存到文件
-                            result = f'{ipaddr} is alive\n'
-                            with open(command_w,'a',encoding='utf-8') as f:
-                                f.write(result)
+                            try:
+                                result = f'{ipaddr} is alive\n'
+                                with open(command_w,'a',encoding='utf-8') as f:
+                                    f.write(result)
+                            except Exception as d:
+                                print(f'保存到{command_w}失败： {d}')
                     else:
                         print(f'{ipaddr} is dead')
                 except Exception as f:
