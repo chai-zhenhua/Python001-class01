@@ -44,20 +44,13 @@ class GetData(object):
         for port in ports:
             self.port_queue.put(port)
 
-
         # 组合IP & ports
         # ip_pools = itertools.product(ip_list, ports)
         # for ip_pool in ip_pools:
         #     self.ip_queue.put(ip_pool)
 
-
-        # # -w 输出
-        # output_address = ''
-
-
 class Check(Thread):
     '''检测网络联通和端口开放'''
-
     def __init__(self, ipQueue):  # q: 存放ip 和 port 的数据队列
         super().__init__()
         self.ipQueue = ipQueue
@@ -76,7 +69,6 @@ class Check(Thread):
                 try:
                     ipaddr = self.ipQueue.get()
                     #print(f'地址是：{ipaddr}')
-
                     res = ping(dest_addr=ipaddr,timeout=0.5)
                     if res:
                         print(f'{ipaddr} is alive')
