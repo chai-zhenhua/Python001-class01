@@ -14,7 +14,10 @@ class GetData(object):
     def __init__(self, ip_ranage):
         self.ip_queue = Queue()
         self.port_queue = Queue()
+        #print(f'输入的ip是：{ip_ranage}')
+        ip_list = []
         if '-' in ip_ranage:
+         #   print(f'执行正则匹配函数')
             # 把ip地址段转化为ip列表
             first_ip = re.search('[0-9]+.[0-9]+.[0-9]+.[0-9]+', ip_ranage)  # 获取IP地址段的第一个ip
             ip_prefix = re.search('[0-9]+.[0-9]+.[0-9]+', first_ip.group())  # 获取IP地址段的前缀（这里计算不太严谨，没有考虑子网掩码）
@@ -23,15 +26,18 @@ class GetData(object):
 
             # print(type(int(start_point.group())))
 
-            ip_list = []
             for n in range(int(start_point.group()), int(end_point.group())):
                 ip = f'{ip_prefix.group()}.{n}'
                 ip_list.append(ip)
             self.ip_list = ip_list
         else:
-            self.ip_list = ip_ranage
+            #print(f'直接赋值')
+            ip_list.append(ip_ranage)
+            self.ip_list = ip_list
+            #print(f'ip_list is : {self.ip_list}')
 
         for ip in self.ip_list:
+            #print(f'{ip}')
             self.ip_queue.put(ip)
 
         ports = range(1, 1025)  # ports
@@ -74,6 +80,10 @@ class Check(Thread):
                     res = ping(dest_addr=ipaddr,timeout=0.5)
                     if res:
                         print(f'{ipaddr} is alive')
+                        if command_w:   #保存到文件
+                            result = f'{ipaddr} is alive\n'
+                            with open(command_w,'a',encoding='utf-8') as f:
+                                f.write(result)
                     else:
                         print(f'{ipaddr} is dead')
                 except Exception as f:
