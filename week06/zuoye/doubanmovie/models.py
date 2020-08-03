@@ -14,6 +14,7 @@ class MovieInfo(models.Model):
     short = models.CharField(max_length=400)
     sentiment = models.FloatField()
 
+
     class Meta:
         managed = False
         db_table = 'movie_info'
