@@ -9,36 +9,38 @@
 from abc import  ABCMeta, abstractmethod
 
 class Zoo(object):
-    __isinstances = False
     def __init__(self, name):
         self.name = name
+        self.__animals = set()
 
-    @classmethod
-    def add_animal(cls):
-        if cls.__isinstances:
-            return cls.__isinstances
-        cls.__isinstances = object.__new__(cls)
-        return cls.__isinstances
+    def add_animal(self,animal):
+        if animal not in self.__animals:
+            self.__animals.add(animal)
+            return True
+        return False
+
+    def __getattr__(self, item):
+        return any(i.__class__.__name__ == item for i in self.__animals)
 
 class Animal(metaclass=ABCMeta):
-    def __init__(self, name, type, body, nature, ferocious=False):
+    @abstractmethod
+    def __init__(self, name, type, size, character, ferocious=False):
         self.name = name
         self.type = type
-        self.body = body
-        self.nature = nature
+        self.size = size
+        self.character = character
         self.ferocious = False
 
-    @classmethod
-    def check_ferocious(cls):
-        body_list = ['small', 'mild', 'big', ]
-        if cls.type > body_list.index(1) and cls.nature == '凶猛' and cls.type == '食肉':
-            return cls(type,body=cls.body,nature=cls.nature,ferocious=True)
-        return cls(type,body=cls.body,nature=cls.nature,ferocious=False)
+    @property
+    def is_ferocious(self):
+        if self.type == '食肉' and self.character == '凶猛' and self.size != '小':
+            return self.ferocious is True
 
 class Cat(Animal):
-    @property
-    def miao(self):
-        return 'miao miao miao'
+    sounds = "miao~~"
+    def __init__(self,name, type, size, character, ferocious=False):
+        super().__init__(name, type, size, character, ferocious)
+        self.is_pet = True
 
 if __name__ == '__main__':
     # 实例化动物园
@@ -46,6 +48,7 @@ if __name__ == '__main__':
     # 实例化一只猫，属性包括名字、类型、体型、性格
     cat1 = Cat('大花猫 1', '食肉', '小', '温顺')
     # 增加一只猫到动物园
-   # z.add_animal(cat1)
+    z.add_animal(cat1)
     # 动物园是否有猫这种动物
     have_cat = getattr(z, 'Cat')
+    print(have_cat)
