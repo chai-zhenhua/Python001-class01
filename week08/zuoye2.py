@@ -3,21 +3,14 @@
 自定义一个 python 函数，实现 map() 函数的功能。
 """
 
-# def map(func, iter:iter):
-#     result = []
-#     for n in iter:
-#         c = func(n)
-#         result.append(c)
-#     return result
-#
-def f1(a):
-    return a ** 2
+def map(func, iter):
+    for n in iter:
+        yield func(n)
 
-l1 = [i for i in range(1,11)]
+def f1(n):
+    return n * n
 
-# d = map(f1, l1)
-# print(d)
-d = map(f1,l1)
-print(list(d))
+l1 = [1,2,3,4,5,6, ]
 
-
+ret = map(f1,l1)
+print(list(ret))
